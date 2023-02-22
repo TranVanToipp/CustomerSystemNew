@@ -1,69 +1,89 @@
+/**
+ * @(#)T001.java 01-00 2021/07/16
+ *
+ * Copyright(C) 2021 by FUJINET CO., LTD.
+ *
+ * Last_Update 2021/07/16.
+ * Version 1.00.
+ */
+package fjs.cs.action;
 
 import java.io.IOException;
 
+import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Dao.LoginDao;
-import entyti.Account;
+import fjs.cs.common.Constants;
+import fjs.cs.dao.T001Dao;
+import fjs.cs.dto.T001Dto;
 
 /**
- * Servlet implementation class Login
+ * T001
+ * 
+ * @version 1.00
+ * @since 1.00
+ * @author Long-PH
+ * 
  */
-@WebServlet("/Login")
-public class Login extends HttpServlet {
+public class T001 extends HttpServlet {
+
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @see HttpServlet#HttpServlet()
+	 * Init man hinh
+	 * 
+	 * @param HttpServletRequest  req
+	 * @param HttpServletResponse resp
+	 * @return RequestDispatcher
+	 * @throws ServletException, IOException
+	 * @since 1.00
 	 */
-	public Login() {
-		super();
-		// TODO Auto-generated constructor stub
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		RequestDispatcher myRD = null;
+		// Hien thi man hinh Login
+		myRD = req.getRequestDispatcher(Constants.T001_LOGIN);
+		myRD.forward(req, resp);
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * Event man hinh
+	 * 
+	 * @param HttpServletRequest  req
+	 * @param HttpServletResponse resp
+	 * @return RequestDispatcher
+	 * @throws ServletException, IOException
+	 * @since 1.00
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		response.setContentType("text/html");
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setCharacterEncoding("UTF-8");
 		try {
-			String user = request.getParameter("userName");
-			String pass = request.getParameter("password");
+			String user = req.getParameter("userName");
+			String pass = req.getParameter("password");
 			System.out.print(user + pass);
-			LoginDao loginDao = new LoginDao();
-			Account a = loginDao.CheckLogin(user, pass);
-			if (a != null) {
-				// Nếu đăng nhập thành công, chuyển hướng tới trang Logins.jsp
-				response.sendRedirect("Logins.jsp");
+			T001Dao loginDao = new T001Dao();
+			T001Dto result = loginDao.CheckLogin(user, pass);
+			
+			/**
+			 * Nếu đăng nhập thành công, chuyển hướng tới trang T002_Search
+			 * Ngoài ra: Lưu thông báo lỗi và chuyển hướng trang T001_Login
+			 * thông báo lỗi.
+			 */
+			if (result != null) {
+				resp.sendRedirect("/CustomerSystem/T002");
 			} else {
-				// Nếu đăng nhập không thành công, chuyển hướng tới trang báo lỗi
-//				response.sendRedirect("error.jsp");
-				//Lưu thông báo lỗi và chuyển hướng trang
-				String message = "Sai rồi!!!";
-				request.setAttribute("message", message);
-				RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
-				 dispatcher.include(request, response);
+				String message = "ユーザーIDまたはパスワードが不正です。";
+				req.setAttribute("message", message);
+				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/T001.jsp");
+				dispatcher.forward(req, resp);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 }
