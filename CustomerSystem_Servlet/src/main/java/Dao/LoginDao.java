@@ -1,37 +1,49 @@
-package Dao;
+/**
+ * @(#)T001Dao.java 01-00 2021/07/16
+ *
+ * Copyright(C) 2021 by FUJINET CO., LTD.
+ *
+ * Last_Update 2021/07/16
+ * Version 1.00.
+ */
+package fjs.cs.dao;
+/**
+ * T001Dao
+ * 
+ * @version 1.00
+ * @since  1.00
+ * @author Long-PH
+ * 
+ */
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import com.mysql.cj.xdevapi.PreparableStatement;
+import fjs.cs.dto.T001Dto;
 
-import entyti.Account;
-
-public class LoginDao {
-	
-	public static Connection getConnection() {
-		Connection con = null;
+public class T001Dao {
+	public Connection getConnection() throws SQLException {
+		Connection connection = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			String User = "root";
-			String Pass = "";
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/customsystem", User, Pass);
-		}catch(Exception e) {
-			System.out.print(e);
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			String connectionURL = "jdbc:sqlserver://TOI-TV-TTV-VM\\SQLEXPRESS:1433;databaseName=CustomerSystem";
+			connection = DriverManager.getConnection(connectionURL,"sa", "TranVanToi234");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return con;
+		return connection;
 	}
 	
-	
-	public Account CheckLogin(String user, String pass) {
+	public T001Dto CheckLogin(String user, String pass) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			String query = "SELECT count(*) as CNT FROM mstuser WHERE DELETE_YMD is null and USERID = ? AND PASSWORD = ?";
-			conn = new LoginDao().getConnection();
+			String query = "select COUNT(*) as CNT from MSTUSER where DELETE_YMD is null and USERID =? and PASSWORD =?";
+			conn = new T001Dao().getConnection();
 			ps = conn.prepareStatement(query);
 			ps.setString(1, user);
 			ps.setString(2, pass);
@@ -39,21 +51,15 @@ public class LoginDao {
 			while (rs.next()) {
 		        int count = rs.getInt("CNT");
 		        if (count == 1) {
-		            Account a = new Account(user, pass);
+		            T001Dto a = new T001Dto(user, pass);
 		            return a;
 		        } else {
-		            // Nếu số lượng bản ghi trả về không phải là 1, thì không đăng nhập thành công
 		            return null;
 		        }
-		    }
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-
-	
-	
-	
 }
-
