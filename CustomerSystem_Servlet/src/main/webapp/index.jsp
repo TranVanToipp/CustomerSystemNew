@@ -1,10 +1,19 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta charset="UTF-8">
-<title>CustomSystem_Servlet</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/base.css" type="text/css">
+
+<style type="text/css">
+  <%@include file="/WEB-INF/css/base.css"%>
+</style>
+<style type="text/css">
+  <%@include file="/WEB-INF/css/login.css"%>
+</style>
+
+<title>Sample</title>
 </head>
 
 <style>
@@ -118,6 +127,7 @@ html {
 }
 </style>
 
+
 <body>
 	<div id="main">
 		<div class="header">
@@ -127,18 +137,18 @@ html {
 		<div class="content">
 			<div class="content-text">Login</div>
 			<div class="content-login">
-				<form action="/CustomerSystem_Servlet/Login" id="idform"
-					method="POST" onsubmit="return checkInput()"> 
+				<form action="/CustomerSystem/T001" name="frmLogin" method="POST" onsubmit="return checkInput()" >
 					<div class="content-login__header">
 						<h3>LOGIN</h3>
-						<div id="lblErrorMessage">
+						<label id="lblErrorMessage">
 							<%
 								if (request.getAttribute("message") != null) {
 							%>
-								<p><%=request.getAttribute("message")%></p> <%
+								<label><%=request.getAttribute("message")%></label> <%
 							 }
 							 %>
-						</div>
+						
+						</label>
 					</div>
 					<div class="content-login__container">
 
@@ -149,53 +159,48 @@ html {
 						</div>
 						<div class="form-group__password">
 							<label for="password" class="form-label">Password: </label> <input
-								id="txtPassword" name="password"  type="password"
-								maxlength="8" class="form-control">
+								id="txtPassword" name="password" type="password" maxlength="8"
+								class="form-control">
 						</div>
 						<div class="form-group__btn">
 							<button type="submit" id="btnLogin" class="form-submit">Login</button>
-							<button type="button" id="btnClear" class="form-submit" onclick="clearData()">Clear</button>
+							<button type="button" id="btnClear" class="form-submit">Clear</button>
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
-
 		<footer class="footer">
-			<div class="header-br"></div>
-			<div class="footer-text__copyright">Copyright (c) 2000-2008
-				FUJINET, All Rights Reserved.</div>
+		<div class="header-br"></div>
+		<div class="footer-text__copyright">Copyright (c) 2000-2008
+			FUJINET, All Rights Reserved.</div>
 		</footer>
-
-
 	</div>
 </body>
 
 <script>
-	function clearData() {
+	var btnClear = document.getElementById("btnClear");
+	btnClear.addEventListener('click', (event) => {
+		event.preventDefault();
 		console.log("data");
 		document.getElementById("txtUserID").value = "";
 		document.getElementById("txtPassword").value = "";
-		document.getElementById("lblErrorMessage").value = "";
-	}
-	
-	
-	function checkInput() {
+		document.getElementById("lblErrorMessage").innerHTML = "";
+	});
+
+	function checkInput () {
+			var user = document.getElementById("txtUserID").value;
+			var pass = document.getElementById("txtPassword").value;
+			if (user == "") {
+				document.getElementById("lblErrorMessage").innerHTML = "ユーザーIDを入力してください。";
+				return false;
+			}
+			if (pass == "") {
+				document.getElementById("lblErrorMessage").innerHTML = "パスワードを入力してください。";
+				return false;
+			}
+			return true;
 		
-		var user = document.getElementById("txtUserID").value;
-		var pass = document.getElementById("txtPassword").value;
-		document.getElementById("lblErrorMessage").textContent = "";
-		if (user == "") {
-			console.log(111);
-			document.getElementById("lblErrorMessage").textContent = "ユーザーIDを入力してください。";
-			return false;
-		}
-		if (pass == "") {
-			document.getElementById("lblErrorMessage").textContent = "パスワードを入力してください。";
-			return false;
-		}
-		document.getElementById("lblErrorMessage").textContent = "";
-		return true;
 	}
 </script>
 </html>
